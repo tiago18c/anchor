@@ -32,6 +32,7 @@ use std::string::ToString;
 
 mod config;
 mod template;
+mod dotnet_generator;
 
 // Version of the docker image.
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -155,6 +156,8 @@ pub enum Command {
         java: bool,
         #[clap(long)]
         swift: bool,
+        #[clap(long)]
+        dotnet: bool,
         /// Filepath to the IDL
         #[clap(short, long)]
         idl: String,
@@ -284,9 +287,10 @@ fn main() -> Result<()> {
         Command::ClientGen {
             java,
             swift,
+            dotnet,
             idl,
             out,
-        } => client_gen(&opts.cfg_override, java, swift, idl, out),
+        } => client_gen(&opts.cfg_override, java, swift, dotnet, idl, out),
     }
 }
 
@@ -1681,6 +1685,7 @@ fn client_gen(
     cfg_override: &ConfigOverride,
     java: bool,
     swift: bool,
+    dotnet: bool,
     idl: String,
     out: String,
 ) -> Result<()> {
@@ -1693,6 +1698,9 @@ fn client_gen(
     }
     if swift {
         gen_swift(&idl, &out)?;
+    }
+    if dotnet {
+        dotnet_generator::generate(&idl, &out)?;
     }
     Ok(())
 }
