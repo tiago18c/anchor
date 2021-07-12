@@ -32,7 +32,7 @@ use std::string::ToString;
 
 mod config;
 mod template;
-mod dotnet_generator;
+mod client_generators;
 
 // Version of the docker image.
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -1700,7 +1700,7 @@ fn client_gen(
         gen_swift(&idl, &out)?;
     }
     if dotnet {
-        dotnet_generator::generate(&idl, &out)?;
+        client_generators::dotnet::generate(&idl, &out)?;
     }
     Ok(())
 }

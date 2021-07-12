@@ -1,0 +1,18 @@
+using Solnet.Rpc;
+using Solnet.Wallet;
+
+
+namespace {{ name }} 
+{
+    #region accounts
+{% for account in accounts %}
+{{ account }}
+{% endfor %}
+    #endregion
+    
+    #region types
+{% for type in types %}
+{{ type }}
+{% endfor %}
+    #endregion
+}

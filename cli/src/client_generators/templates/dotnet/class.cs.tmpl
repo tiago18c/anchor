@@ -1,0 +1,12 @@
+    public class {{ name }}
+    {
+        #region fields
+        
+{% for field in fields %}
+{{ field }}
+{% endfor %}
+
+        #endregion
+    
+        {{ methods }}
+    }
