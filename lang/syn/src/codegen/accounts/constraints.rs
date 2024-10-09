@@ -689,6 +689,7 @@ fn generate_constraint_init_group(
             close_authority,
             permanent_delegate,
             interest_bearing_mint_rate,
+            default_account_state,
             interest_bearing_mint_authority,
             transfer_hook_authority,
             transfer_hook_program_id,
@@ -811,6 +812,10 @@ fn generate_constraint_init_group(
                 extensions.push(quote! {::anchor_spl::token_interface::spl_token_2022::extension::ExtensionType::InterestBearingConfig});
             }
 
+            if default_account_state.is_some() {
+                extensions.push(quote! {::anchor_spl::token_interface::spl_token_2022::extension::ExtensionType::DefaultAccountState});
+            }
+
             let mint_space = if extensions.is_empty() {
                 quote! { ::anchor_spl::token::Mint::LEN }
             } else {
@@ -873,6 +878,11 @@ fn generate_constraint_init_group(
             let interest_bearing_mint_rate = match interest_bearing_mint_rate {
                 Some(ibmr) => quote! { Option::<i16>::Some(#ibmr) },
                 None => quote! { Option::<i16>::None },
+            };
+
+            let default_account_state = match default_account_state {
+                Some(d) => quote! { Option::<&AccountState>::Some(#d) },
+                None => quote! { Option::<&AccountState>::None },
             };
 
             let interest_bearing_mint_authority = match interest_bearing_mint_authority {
@@ -969,6 +979,12 @@ fn generate_constraint_init_group(
                                             token_program_id: #token_program.to_account_info(),
                                             mint: #field.to_account_info(),
                                         }), #interest_bearing_mint_authority, #interest_bearing_mint_rate.unwrap())?;
+                                    },
+                                    ::anchor_spl::token_interface::spl_token_2022::extension::ExtensionType::DefaultAccountState => {
+                                        ::anchor_spl::token_interface::default_account_state_initialize(anchor_lang::context::CpiContext::new(#token_program.to_account_info(), ::anchor_spl::token_interface::DefaultAccountStateInitialize {
+                                            token_program_id: #token_program.to_account_info(),
+                                            mint: #field.to_account_info(),
+                                        }), #default_account_state.unwrap())?;
                                     },
                                     // All extensions specified by the user should be implemented.
                                     // If this line runs, it means there is a bug in the codegen.

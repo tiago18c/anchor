@@ -69,6 +69,8 @@ describe("token extensions", () => {
       })
       .signers([mint, payer])
       .rpc();
+
+    console.log(mint.publicKey.toBase58());
   });
 
   it("mint extension constraints test passes", async () => {

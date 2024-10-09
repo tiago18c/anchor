@@ -259,6 +259,27 @@ pub fn parse_token(stream: ParseStream) -> ParseResult<ConstraintToken> {
                         _ => return Err(ParseError::new(ident.span(), "Invalid attribute")),
                     }
                 }
+                "default_account_state" => {
+                    stream.parse::<Token![:]>()?;
+                    stream.parse::<Token![:]>()?;
+                    let kw = stream.call(Ident::parse_any)?.to_string();
+                    stream.parse::<Token![=]>()?;
+
+                    let span = ident
+                        .span()
+                        .join(stream.span())
+                        .unwrap_or_else(|| ident.span());
+
+                    match kw.as_str() {
+                        "state" => ConstraintToken::ExtensionDefaultAccountState(Context::new(
+                            span,
+                            ConstraintExtensionDefaultAccountState {
+                                state: stream.parse()?,
+                            },
+                        )),
+                        _ => return Err(ParseError::new(ident.span(), "Invalid attribute")),
+                    }
+                }
                 "transfer_hook" => {
                     stream.parse::<Token![:]>()?;
                     stream.parse::<Token![:]>()?;
@@ -571,6 +592,7 @@ pub struct ConstraintGroupBuilder<'ty> {
     pub extension_interest_bearing_mint_rate:
         Option<Context<ConstraintExtensionInterestBearingMintRate>>,
     pub extension_interest_bearing_mint_authority: Option<Context<ConstraintExtensionAuthority>>,
+    pub extension_default_account_state: Option<Context<ConstraintExtensionDefaultAccountState>>,
     pub bump: Option<Context<ConstraintTokenBump>>,
     pub program_seed: Option<Context<ConstraintProgramSeed>>,
     pub realloc: Option<Context<ConstraintRealloc>>,
@@ -618,6 +640,7 @@ impl<'ty> ConstraintGroupBuilder<'ty> {
             extension_permanent_delegate: None,
             extension_interest_bearing_mint_rate: None,
             extension_interest_bearing_mint_authority: None,
+            extension_default_account_state: None,
             bump: None,
             program_seed: None,
             realloc: None,
@@ -832,6 +855,7 @@ impl<'ty> ConstraintGroupBuilder<'ty> {
             extension_permanent_delegate,
             extension_interest_bearing_mint_rate,
             extension_interest_bearing_mint_authority,
+            extension_default_account_state,
             bump,
             program_seed,
             realloc,
@@ -1045,6 +1069,7 @@ impl<'ty> ConstraintGroupBuilder<'ty> {
                         interest_bearing_mint_authority: extension_interest_bearing_mint_authority.map(|ibma| ibma.into_inner().authority),
                         transfer_hook_authority: extension_transfer_hook_authority.map(|tha| tha.into_inner().authority),
                         transfer_hook_program_id: extension_transfer_hook_program_id.map(|thpid| thpid.into_inner().program_id),
+                        default_account_state: extension_default_account_state.map(|d| d.into_inner().state),
                     }
                 } else {
                     InitKind::Program {
@@ -1138,6 +1163,9 @@ impl<'ty> ConstraintGroupBuilder<'ty> {
             }
             ConstraintToken::ExtensionInterestBearingMintAuthority(c) => {
                 self.add_extension_interest_bearing_mint_authority(c)
+            }
+            ConstraintToken::ExtensionDefaultAccountState(c) => {
+                self.add_extension_default_account_state(c)
             }
         }
     }
@@ -1749,4 +1777,18 @@ impl<'ty> ConstraintGroupBuilder<'ty> {
         self.extension_interest_bearing_mint_authority.replace(c);
         Ok(())
     }
+
+    fn add_extension_default_account_state(
+        &mut self,
+        c: Context<ConstraintExtensionDefaultAccountState>,
+    ) -> ParseResult<()> {
+        if self.extension_default_account_state.is_some() {
+            return Err(ParseError::new(
+                c.span(),
+                "extension default account state already provided",
+            ));
+        }
+        self.extension_default_account_state.replace(c);
+        Ok(())
+    }   
 }

@@ -5,12 +5,13 @@ use anchor_spl::{
     token_2022::spl_token_2022::extension::{
         group_member_pointer::GroupMemberPointer, metadata_pointer::MetadataPointer,
         mint_close_authority::MintCloseAuthority, permanent_delegate::PermanentDelegate,
-        transfer_hook::TransferHook,
+        transfer_hook::TransferHook, default_account_state::DefaultAccountState,
     },
     token_interface::{
         get_mint_extension_data, spl_token_metadata_interface::state::TokenMetadata,
         token_metadata_initialize, Mint, Token2022, TokenAccount, TokenMetadataInitialize,
     },
+    token_2022::spl_token_2022::state::AccountState,
 };
 use spl_pod::optional_keys::OptionalNonZeroPubkey;
 
@@ -53,6 +54,7 @@ pub struct CreateMintAccount<'info> {
         extensions::transfer_hook::program_id = crate::ID,
         extensions::close_authority::authority = authority,
         extensions::permanent_delegate::delegate = authority,
+        extensions::default_account_state::state = &AccountState::Frozen,
     )]
     pub mint: Box<InterfaceAccount<'info, Mint>>,
     #[account(
@@ -150,6 +152,12 @@ pub fn handler(ctx: Context<CreateMintAccount>, args: CreateMintAccountArgs) -> 
         group_member_pointer.member_address,
         OptionalNonZeroPubkey::try_from(mint_key)?
     );
+
+    let default_account_state = get_mint_extension_data::<DefaultAccountState>(mint_data)?;
+    assert_eq!(default_account_state.state, <anchor_spl::token_2022::spl_token_2022::state::AccountState as Into<u8>>::into(AccountState::Frozen));
+
+    assert_eq!(ctx.accounts.mint_token_account.state, AccountState::Frozen.into());
+
     // transfer minimum rent to mint account
     update_account_lamports_to_minimum_balance(
         ctx.accounts.mint.to_account_info(),
