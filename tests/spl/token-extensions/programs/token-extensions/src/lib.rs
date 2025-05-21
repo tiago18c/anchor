@@ -21,7 +21,7 @@ pub mod token_extensions {
         ctx: Context<CreateMintAccount>,
         args: CreateMintAccountArgs,
     ) -> Result<()> {
-        instructions::handler(ctx, args)
+        instructions::create_mint_handler(ctx, args)
     }
 
     pub fn check_mint_extensions_constraints(
@@ -32,10 +32,7 @@ pub mod token_extensions {
 
     pub fn update_and_remove_token_metadata(
         ctx: Context<UpdateAndRemoveTokenMetadata>,
-        args: UpdateAndRemoveTokenMetadataArgs,
     ) -> Result<()> {
-        instructions::handler(ctx, args)
+        instructions::update_and_remove_token_metadata_handler(ctx)
     }
-
-
 }
