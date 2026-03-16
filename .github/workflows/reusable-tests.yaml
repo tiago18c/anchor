@@ -374,6 +374,7 @@ jobs:
           anchor init --test-template ${{ matrix.template }} hello-anchor-${{ matrix.template }}
           cd hello-anchor-${{ matrix.template }}
           sed -i "s|^anchor-lang = .*|anchor-lang = { path = \"$GITHUB_WORKSPACE/lang\" }|" programs/hello-anchor-${{ matrix.template }}/Cargo.toml
+          [[ "${{ matrix.template }}" == "rust" ]] && sed -i "s|^anchor-client = .*|anchor-client = { path = \"$GITHUB_WORKSPACE/client\" }|" tests/Cargo.toml || true
           yarn link @anchor-lang/core && yarn && anchor test && yarn lint:fix
       - uses: ./.github/actions/git-diff/
 

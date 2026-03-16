@@ -202,14 +202,17 @@ fn cargo_toml(name: &str, test_template: Option<&TestTemplate>) -> String {
         Some(TestTemplate::Mollusk) => {
             r#"
 [dev-dependencies]
-mollusk-svm = "~0.4"
+mollusk-svm = "~0.10"
 "#
         }
         Some(TestTemplate::Litesvm) => {
             r#"
 [dev-dependencies]
 litesvm = "0.10.0"
-solana-sdk = "3.0.0"
+solana-message = "3.0.0"
+solana-transaction = "3.0.0"
+solana-signer = "3.0.0"
+solana-keypair = "3.0.0"
 "#
         }
         _ => "",
@@ -774,6 +777,8 @@ rust-version = "{ANCHOR_MSRV}"
 [dependencies]
 anchor-client = "{VERSION}"
 {name} = {{ version = "0.1.0", path = "../programs/{name}" }}
+solana-keypair = "3.0.0"
+solana-pubkey = "3.0.0"
 "#
     )
 }
@@ -792,14 +797,12 @@ mod test_initialize;
         (
             src_path.join("test_initialize.rs"),
             format!(
-                r#"use std::str::FromStr;
-
-use anchor_client::{{
-    solana_sdk::{{
-        commitment_config::CommitmentConfig, pubkey::Pubkey, signature::read_keypair_file,
-    }},
+                r#"use anchor_client::{{
+    CommitmentConfig,
     Client, Cluster,
 }};
+use solana_keypair::{{read_keypair_file}};
+use solana_pubkey::Pubkey;
 
 #[test]
 fn test_initialize() {{
@@ -869,9 +872,10 @@ fn create_program_template_litesvm_test(name: &str, tests_path: &Path) -> Files 
 use {{
     anchor_lang::{{solana_program::instruction::Instruction, InstructionData, ToAccountMetas}},
     litesvm::LiteSVM,
-    solana_sdk::message::{{Message, VersionedMessage}},
-    solana_sdk::signature::{{Keypair, Signer}},
-    solana_sdk::transaction::VersionedTransaction,
+    solana_message::{{Message, VersionedMessage}},
+    solana_signer::Signer,
+    solana_keypair::Keypair,
+    solana_transaction::versioned::VersionedTransaction,
 }};
 
 #[test]
