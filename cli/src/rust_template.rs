@@ -884,7 +884,7 @@ fn test_initialize() {{
     let payer = Keypair::new();
     let mut svm = LiteSVM::new();
     let bytes = include_bytes!("../../../target/deploy/{0}.so");
-    svm.add_program(program_id, bytes);
+    svm.add_program(program_id, bytes).unwrap();
     svm.airdrop(&payer.pubkey(), 1_000_000_000).unwrap();
     
     let instruction = Instruction::new_with_bytes(
