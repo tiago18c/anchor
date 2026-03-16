@@ -373,7 +373,7 @@ jobs:
           cd "$(mktemp -d)"
           anchor init --test-template ${{ matrix.template }} hello-anchor-${{ matrix.template }}
           cd hello-anchor-${{ matrix.template }}
-          sed -i "s/^anchor-lang = .*/anchor-lang = { path = \"$GITHUB_WORKSPACE\/lang\" }/" programs/${{ matrix.template }}/Cargo.toml
+          sed -i "s|^anchor-lang = .*|anchor-lang = { path = \"$GITHUB_WORKSPACE/lang\" }|" programs/${{ matrix.template }}/Cargo.toml
           yarn link @anchor-lang/core && yarn && anchor test && yarn lint:fix
       - uses: ./.github/actions/git-diff/
 
