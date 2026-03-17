@@ -863,7 +863,7 @@ fn test_initialize() {{
     )]
 }
 
-/// Generate template for Mollusk Rust unit-test
+/// Generate template for LiteSVM Rust unit-test
 fn create_program_template_litesvm_test(name: &str, tests_path: &Path) -> Files {
     vec![(
         tests_path.join("test_initialize.rs"),
