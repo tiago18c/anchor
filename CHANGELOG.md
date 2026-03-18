@@ -57,6 +57,7 @@ The minor version will be incremented upon a breaking change and the patch versi
 - cli: Fix `i128`/`u128` deserialization ([#3938](https://github.com/solana-foundation/anchor/pull/3938)).
 - ts: Fix incorrect Anchor dependency version requirements ([#4138](https://github.com/solana-foundation/anchor/pull/4138)).
 - lang: Omit `parsers` module of `declare_program!` during on-chain (Solana) builds ([#4109](https://github.com/solana-foundation/anchor/pull/4109)).
+- docs: Fixed broken links and replaced coral-xyz github references to solana-foundation ([#4320](https://github.com/solana-foundation/anchor/pull/4320))
 
 ### Breaking
 
