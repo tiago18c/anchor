@@ -70,7 +70,7 @@ The minor version will be incremented upon a breaking change and the patch versi
 - idl: Remove the conflicting account names check ([#4294](https://github.com/solana-foundation/anchor/pull/4294)).
 - deps: Update to Solana 3.0 ([#4031](https://github.com/solana-foundation/anchor/pull/4031)).
 - idl: Remove legacy IDL instructions and integrate Program Metadata for IDL management ([#3798](https://github.com/solana-foundation/anchor/pull/3798)).
-- ts: Rename TypeScript packages from `@solana-foundation/anchor` to `@anchor-lang/anchor` ([#4141](https://github.com/solana-foundation/anchor/pull/4141)).
+- ts: Rename TypeScript packages from `@coral-xyz/anchor` to `@anchor-lang/anchor` ([#4141](https://github.com/solana-foundation/anchor/pull/4141)).
 - lang: Remove program account info from CPI context ([#2762](https://github.com/solana-foundation/anchor/pull/2762)).
 - cli: Remove dependency on the external `solana` CLI; native implementations provided for balance, airdrop, address, deploy, and other commands ([#4099](https://github.com/solana-foundation/anchor/pull/4099)).
 - idl: Disallow multiple `#[error_code]` definitions in a single program ([#4300](https://github.com/solana-foundation/anchor/pull/4300)).
@@ -367,7 +367,7 @@ See the [Anchor 0.30 release notes](https://www.anchor-lang.com/release-notes/0.
 - cli: Add support for simple wildcard patterns in Anchor.toml's `workspace.members` and `workspace.exclude`. ([#2785](https://github.com/solana-foundation/anchor/pull/2785)).
 - cli: Add `--test-template` option for `init` command ([#2805](https://github.com/solana-foundation/anchor/pull/2805)).
 - cli: `anchor test` is able to run multiple commands ([#2799](https://github.com/solana-foundation/anchor/pull/2799)).
-- cli: Check `@solana-foundation/anchor` package and CLI version compatibility ([#2813](https://github.com/solana-foundation/anchor/pull/2813)).
+- cli: Check `@coral-xyz/anchor` package and CLI version compatibility ([#2813](https://github.com/solana-foundation/anchor/pull/2813)).
 - cli: Accept package name as program name ([#2816](https://github.com/solana-foundation/anchor/pull/2816)).
 - cli: Add ability to build and test only a specified program ([#2823](https://github.com/solana-foundation/anchor/pull/2823)).
 - idl: Add new IDL spec ([#2824](https://github.com/solana-foundation/anchor/pull/2824)).
@@ -616,9 +616,9 @@ See the [Anchor 0.29 release notes](https://www.anchor-lang.com/release-notes/0.
 - lang: Remove `rent` from constraints ([#2265](https://github.com/solana-foundation/anchor/pull/2265)).
 - spl: Remove `rent` from `associated_token::Create` ([#2265](https://github.com/solana-foundation/anchor/pull/2265)).
 - lang: Add `Discriminator` and `Owner` trait implementation for structures representing instructions ([#1997](https://github.com/solana-foundation/anchor/pull/1997)).
-- ts: '@solana-foundation/borsh' package is now part of the yarn monorepo ([#2290](https://github.com/solana-foundation/anchor/pull/2290)). The borsh package needs to be built before the anchor package can be built but this should happen automatically when running `yarn build` in packages/anchor, see [#2299](https://github.com/solana-foundation/anchor/pull/2299) and [#2306](https://github.com/solana-foundation/anchor/pull/2306).
+- ts: '@coral-xyz/borsh' package is now part of the yarn monorepo ([#2290](https://github.com/solana-foundation/anchor/pull/2290)). The borsh package needs to be built before the anchor package can be built but this should happen automatically when running `yarn build` in packages/anchor, see [#2299](https://github.com/solana-foundation/anchor/pull/2299) and [#2306](https://github.com/solana-foundation/anchor/pull/2306).
 - lang: Add support for optionally passing in accounts using the syntax `Optional<Account<'info, T>>`. Shouldn't affect existing programs but may be a breaking change to tools that use the anchor generated IDL. [#2101](https://github.com/solana-foundation/anchor/pull/2101).
-- ts: Switch from `@project-serum/anchor` to the `@solana-foundation/anchor` package [#2318](https://github.com/solana-foundation/anchor/pull/2318).
+- ts: Switch from `@project-serum/anchor` to the `@coral-xyz/anchor` package [#2318](https://github.com/solana-foundation/anchor/pull/2318).
 
 ## [0.25.0] - 2022-07-05
 
