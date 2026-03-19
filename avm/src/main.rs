@@ -64,9 +64,7 @@ pub enum Commands {
 /// Returns true if `pre` is a semver pre-release tag (`rc.`, `beta.`, `alpha.`),
 /// false if it looks like a git commit hash.
 fn is_pre_release(pre: &str) -> bool {
-    pre.starts_with("rc.")
-        || pre.starts_with("beta.")
-        || pre.starts_with("alpha.")
+    pre.starts_with("rc.") || pre.starts_with("beta.") || pre.starts_with("alpha.")
 }
 
 fn parse_install_target(version_or_commit: &str) -> Result<InstallTarget, Error> {
@@ -100,7 +98,9 @@ fn resolve_use_version(version: Option<String>) -> Result<Option<Version>> {
     match version.as_deref() {
         Some("latest") => Ok(Some(avm::get_latest_version(false)?)),
         Some("latest-pre-release") => Ok(Some(avm::get_latest_version(true)?)),
-        Some(v) => Ok(Some(Version::parse(v).map_err(|e| anyhow!("Invalid version `{v}`: {e}"))?)),
+        Some(v) => Ok(Some(
+            Version::parse(v).map_err(|e| anyhow!("Invalid version `{v}`: {e}"))?,
+        )),
         None => Ok(None),
     }
 }
@@ -194,7 +194,6 @@ fn main() -> Result<()> {
     entry(opt)
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -219,7 +218,10 @@ mod tests {
 
     #[test]
     fn test_is_pre_release_commit_hash() {
-        assert_eq!(false, is_pre_release("e1afcbf71e0f2e10fae14525934a6a68479167b9"));
+        assert_eq!(
+            false,
+            is_pre_release("e1afcbf71e0f2e10fae14525934a6a68479167b9")
+        );
     }
 
     #[test]
@@ -232,19 +234,25 @@ mod tests {
     #[test]
     fn test_parse_install_target_stable_version() {
         let result = parse_install_target("1.0.0").unwrap();
-        assert!(matches!(result, InstallTarget::Version(v) if v == Version::parse("1.0.0").unwrap()));
+        assert!(
+            matches!(result, InstallTarget::Version(v) if v == Version::parse("1.0.0").unwrap())
+        );
     }
 
     #[test]
     fn test_parse_install_target_pre_release_version() {
         let result = parse_install_target("1.0.0-rc.3").unwrap();
-        assert!(matches!(result, InstallTarget::Version(v) if v == Version::parse("1.0.0-rc.3").unwrap()));
+        assert!(
+            matches!(result, InstallTarget::Version(v) if v == Version::parse("1.0.0-rc.3").unwrap())
+        );
     }
 
     #[test]
     fn test_parse_install_target_alpha_version() {
         let result = parse_install_target("1.0.0-alpha.1").unwrap();
-        assert!(matches!(result, InstallTarget::Version(v) if v == Version::parse("1.0.0-alpha.1").unwrap()));
+        assert!(
+            matches!(result, InstallTarget::Version(v) if v == Version::parse("1.0.0-alpha.1").unwrap())
+        );
     }
 
     #[test]
@@ -272,7 +280,9 @@ mod tests {
 
     #[test]
     fn test_resolve_use_version_specific_stable() {
-        let version = resolve_use_version(Some("1.0.0".to_string())).unwrap().unwrap();
+        let version = resolve_use_version(Some("1.0.0".to_string()))
+            .unwrap()
+            .unwrap();
         assert_eq!(version.major, 1);
         assert_eq!(version.minor, 0);
         assert_eq!(version.patch, 0);
@@ -281,7 +291,9 @@ mod tests {
 
     #[test]
     fn test_resolve_use_version_specific_pre_release() {
-        let version = resolve_use_version(Some("1.0.0-rc.3".to_string())).unwrap().unwrap();
+        let version = resolve_use_version(Some("1.0.0-rc.3".to_string()))
+            .unwrap()
+            .unwrap();
         assert_eq!(version.major, 1);
         assert_eq!(version.minor, 0);
         assert_eq!(version.patch, 0);
@@ -290,8 +302,13 @@ mod tests {
 
     #[test]
     fn test_resolve_use_version_latest_is_stable() {
-        let version = resolve_use_version(Some("latest".to_string())).unwrap().unwrap();
-        assert!(version.pre.is_empty(), "latest should resolve to a stable version, got {version}");
+        let version = resolve_use_version(Some("latest".to_string()))
+            .unwrap()
+            .unwrap();
+        assert!(
+            version.pre.is_empty(),
+            "latest should resolve to a stable version, got {version}"
+        );
     }
 
     #[test]

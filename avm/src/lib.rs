@@ -263,7 +263,10 @@ pub fn check_and_get_full_commit(commit: &str) -> Result<String> {
 fn fetch_raw(client: &reqwest::blocking::Client, url: &str) -> Result<Option<String>> {
     let response = client
         .get(url)
-        .header(USER_AGENT, "avm https://github.com/solana-foundation/anchor")
+        .header(
+            USER_AGENT,
+            "avm https://github.com/solana-foundation/anchor",
+        )
         .send()?;
     if response.status() == StatusCode::OK {
         Ok(Some(response.text()?))
@@ -601,7 +604,7 @@ pub fn fetch_versions(include_pre_release: bool) -> Result<Vec<Version>, Error> 
         #[serde(rename = "name", deserialize_with = "version_deserializer")]
         version: Version,
         draft: bool,
-        prerelease: bool
+        prerelease: bool,
     }
 
     fn version_deserializer<'de, D>(deserializer: D) -> Result<Version, D::Error>
