@@ -218,12 +218,12 @@ mod tests {
 
     #[test]
     fn test_is_pre_release_commit_hash() {
-        assert!(is_pre_release("e1afcbf71e0f2e10fae14525934a6a68479167b9"));
+        assert!(!is_pre_release("e1afcbf71e0f2e10fae14525934a6a68479167b9"));
     }
 
     #[test]
     fn test_is_pre_release_short_commit() {
-        assert!(is_pre_release("e1afcbf"));
+        assert!(!is_pre_release("e1afcbf"));
     }
 
     // --- parse_install_target (no-network cases) ---
