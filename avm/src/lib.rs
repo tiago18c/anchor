@@ -797,25 +797,23 @@ pub fn check_avm_version_and_warn() {
             eprintln!("avm update check failed. Next attempt in {next_attempt_secs}s.");
         }
         // Cache is stale or missing: run a fresh check.
-        _ => {
-            match get_latest_version_with_client(&HTTP_CLIENT, false) {
-                Ok(latest) => {
-                    write_update_cache_success(&latest);
-                    if latest > current {
-                        eprintln!(
-                            "A new version of avm is available: {latest} (you have {current}). \
-                             Run `avm self-update` to upgrade."
-                        );
-                    }
-                }
-                Err(_) => {
-                    write_update_cache_error();
+        _ => match get_latest_version_with_client(&HTTP_CLIENT, false) {
+            Ok(latest) => {
+                write_update_cache_success(&latest);
+                if latest > current {
                     eprintln!(
-                        "avm update check failed. Next attempt in {UPDATE_CHECK_INTERVAL_SECS}s."
+                        "A new version of avm is available: {latest} (you have {current}). \
+                             Run `avm self-update` to upgrade."
                     );
                 }
             }
-        }
+            Err(_) => {
+                write_update_cache_error();
+                eprintln!(
+                    "avm update check failed. Next attempt in {UPDATE_CHECK_INTERVAL_SECS}s."
+                );
+            }
+        },
     }
 }
 
