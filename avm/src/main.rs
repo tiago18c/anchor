@@ -203,30 +203,27 @@ mod tests {
 
     #[test]
     fn test_is_pre_release_rc() {
-        assert_eq!(true, is_pre_release("rc.3"));
+        assert!(is_pre_release("rc.3"));
     }
 
     #[test]
     fn test_is_pre_release_beta() {
-        assert_eq!(true, is_pre_release("beta.1"));
+        assert!(is_pre_release("beta.1"));
     }
 
     #[test]
     fn test_is_pre_release_alpha() {
-        assert_eq!(true, is_pre_release("alpha.2"));
+        assert!(is_pre_release("alpha.2"));
     }
 
     #[test]
     fn test_is_pre_release_commit_hash() {
-        assert_eq!(
-            false,
-            is_pre_release("e1afcbf71e0f2e10fae14525934a6a68479167b9")
-        );
+        assert!(is_pre_release("e1afcbf71e0f2e10fae14525934a6a68479167b9"));
     }
 
     #[test]
     fn test_is_pre_release_short_commit() {
-        assert_eq!(false, is_pre_release("e1afcbf"));
+        assert!(is_pre_release("e1afcbf"));
     }
 
     // --- parse_install_target (no-network cases) ---
