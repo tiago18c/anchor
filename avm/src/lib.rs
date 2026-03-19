@@ -227,7 +227,6 @@ pub fn update(include_pre_release: bool) -> Result<()> {
     install_version(InstallTarget::Version(latest_version), false, false, false)
 }
 
-
 /// The commit sha provided can be shortened,
 ///
 /// returns the full commit sha3 for unique versioning downstream
@@ -720,7 +719,6 @@ pub fn read_installed_versions() -> Result<Vec<Version>> {
 
     Ok(versions)
 }
-
 
 // ── AVM self-update ───────────────────────────────────────────────────────────
 
