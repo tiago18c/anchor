@@ -11,6 +11,19 @@ use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use std::sync::LazyLock;
 
+/// Checked at most once per hour.
+const UPDATE_CHECK_INTERVAL_SECS: i64 = 60 * 60;
+/// Shorter HTTP timeout so a slow or unreachable GitHub does not stall the CLI for long.
+const HTTP_CLIENT_TIMEOUT_SECS: u64 = 5;
+
+/// Shared HTTP client with a short timeout, used for all outbound requests.
+static HTTP_CLIENT: LazyLock<reqwest::blocking::Client> = LazyLock::new(|| {
+    reqwest::blocking::Client::builder()
+        .timeout(std::time::Duration::from_secs(HTTP_CLIENT_TIMEOUT_SECS))
+        .build()
+        .expect("Failed to build HTTP client")
+});
+
 /// Storage directory for AVM, customizable by setting the $AVM_HOME, defaults to ~/.avm
 pub static AVM_HOME: LazyLock<PathBuf> = LazyLock::new(|| {
     cfg_if::cfg_if! {
@@ -231,8 +244,7 @@ pub fn update(include_pre_release: bool) -> Result<()> {
 ///
 /// returns the full commit sha3 for unique versioning downstream
 pub fn check_and_get_full_commit(commit: &str) -> Result<String> {
-    let client = reqwest::blocking::Client::new();
-    let response = client
+    let response = HTTP_CLIENT
         .get(format!(
             "https://api.github.com/repos/solana-foundation/anchor/commits/{commit}"
         ))
@@ -289,11 +301,10 @@ fn append_commit(version: &mut Version, commit: &str) -> Result<()> {
 }
 
 fn get_anchor_version_from_commit(commit: &str) -> Result<Version> {
-    let client = reqwest::blocking::Client::new();
     let base = format!("https://raw.githubusercontent.com/solana-foundation/anchor/{commit}");
 
     // Newer versions (workspace layout): version lives in [workspace.package] of the root Cargo.toml.
-    if let Some(text) = fetch_raw(&client, &format!("{base}/Cargo.toml"))? {
+    if let Some(text) = fetch_raw(&HTTP_CLIENT, &format!("{base}/Cargo.toml"))? {
         if let Ok(manifest) = Manifest::from_str(&text) {
             if let Some(version_str) = manifest
                 .workspace
@@ -309,7 +320,7 @@ fn get_anchor_version_from_commit(commit: &str) -> Result<Version> {
     }
 
     // Older versions: version lives in [package] of cli/Cargo.toml.
-    let text = fetch_raw(&client, &format!("{base}/cli/Cargo.toml"))?
+    let text = fetch_raw(&HTTP_CLIENT, &format!("{base}/cli/Cargo.toml"))?
         .ok_or_else(|| anyhow!("Could not find anchor-cli version for commit {commit}"))?;
     let manifest = Manifest::from_str(&text)?;
     let mut version = manifest.package().version().parse::<Version>()?;
@@ -599,7 +610,7 @@ pub fn read_anchorversion_file() -> Result<Version> {
 /// Retrieve a list of installable versions of anchor-cli using the GitHub API and tags on the Anchor
 /// repository.
 pub fn fetch_versions(include_pre_release: bool) -> Result<Vec<Version>, Error> {
-    fetch_versions_with_client(&reqwest::blocking::Client::new(), include_pre_release)
+    fetch_versions_with_client(&HTTP_CLIENT, include_pre_release)
 }
 
 fn fetch_versions_with_client(
@@ -692,7 +703,7 @@ pub fn list_versions(include_pre_release: bool) -> Result<()> {
 }
 
 pub fn get_latest_version(include_pre_release: bool) -> Result<Version> {
-    get_latest_version_with_client(&reqwest::blocking::Client::new(), include_pre_release)
+    get_latest_version_with_client(&HTTP_CLIENT, include_pre_release)
 }
 
 fn get_latest_version_with_client(
@@ -760,11 +771,6 @@ fn write_update_cache_error() {
     let _ = fs::write(update_check_file_path(), content);
 }
 
-/// Checked at most once per hour.
-const UPDATE_CHECK_INTERVAL_SECS: i64 = 60 * 60;
-/// Short HTTP timeout so a slow or unreachable GitHub does not stall the CLI for long.
-const UPDATE_CHECK_TIMEOUT_SECS: u64 = 3;
-
 /// Check whether a newer AVM release is available and print a warning to stderr if so.
 /// Results (including failures) are cached in `$AVM_HOME/.update-check` so the network
 /// is hit at most once per hour.
@@ -790,13 +796,9 @@ pub fn check_avm_version_and_warn() {
             let next_attempt_secs = (ts + UPDATE_CHECK_INTERVAL_SECS) - now;
             eprintln!("avm update check failed. Next attempt in {next_attempt_secs}s.");
         }
-        // Cache is stale or missing: run a fresh check with a short timeout.
+        // Cache is stale or missing: run a fresh check.
         _ => {
-            let client = reqwest::blocking::Client::builder()
-                .timeout(std::time::Duration::from_secs(UPDATE_CHECK_TIMEOUT_SECS))
-                .build()
-                .unwrap_or_default();
-            match get_latest_version_with_client(&client, false) {
+            match get_latest_version_with_client(&HTTP_CLIENT, false) {
                 Ok(latest) => {
                     write_update_cache_success(&latest);
                     if latest > current {
@@ -830,6 +832,7 @@ pub fn self_update(include_pre_release: bool, bleeding_edge: bool) -> Result<()>
         "install".to_string(),
         "--git".to_string(),
         "https://github.com/solana-foundation/anchor".to_string(),
+        "--locked".to_string(),
     ];
 
     if bleeding_edge {
