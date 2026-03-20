@@ -377,7 +377,7 @@ jobs:
       - name: Remove anchor-client dependency first to avoid conflicts
         if: ${{ matrix.template == 'rust' }}
         working-directory: /tmp/hello-anchor-${{ matrix.template }}
-        run: cargo remove anchor-client --manifest-path tests/Cargo.toml"
+        run: cargo remove anchor-client --manifest-path tests/Cargo.toml
 
       - name: Point anchor-lang to workspace
         working-directory: /tmp/hello-anchor-${{ matrix.template }}
