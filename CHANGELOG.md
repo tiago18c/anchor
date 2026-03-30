@@ -118,7 +118,7 @@ The minor version will be incremented upon a breaking change and the patch versi
 - idl: Remove the conflicting account names check ([#4294](https://github.com/solana-foundation/anchor/pull/4294)).
 - deps: Update to Solana 3.0 ([#4031](https://github.com/solana-foundation/anchor/pull/4031)).
 - idl: Remove legacy IDL instructions and integrate Program Metadata for IDL management ([#3798](https://github.com/solana-foundation/anchor/pull/3798)).
-- ts: Rename TypeScript packages from `@coral-xyz/anchor` to `@anchor-lang/anchor` ([#4141](https://github.com/solana-foundation/anchor/pull/4141)).
+- ts: Rename TypeScript packages from `@coral-xyz/anchor` to `@anchor-lang/core` ([#4141](https://github.com/solana-foundation/anchor/pull/4141)).
 - lang: Remove program account info from CPI context ([#2762](https://github.com/solana-foundation/anchor/pull/2762)).
 - cli: Remove dependency on the external `solana` CLI; native implementations provided for balance, airdrop, address, deploy, and other commands ([#4099](https://github.com/solana-foundation/anchor/pull/4099)).
 - idl: Disallow multiple `#[error_code]` definitions in a single program ([#4300](https://github.com/solana-foundation/anchor/pull/4300)).
