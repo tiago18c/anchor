@@ -14,7 +14,7 @@ The programs and their tests are located in [/tests/bench](https://github.com/so
 
 ## [Unreleased]
 
-Solana version: 3.1.10
+Solana version: 2.3.0
 
 | Program | Binary Size | -   |
 | ------- | ----------- | --- |
