@@ -236,7 +236,7 @@ describe("event-cpi", () => {
 The
 [`event_cpi`](https://github.com/solana-foundation/anchor/blob/62865c636aecc6974fc9cfebfc6cf08ca4f0bb72/lang/attribute/event/src/lib.rs#L229-L238)
 attribute must be added to the `#[derive(Accounts)]` struct for the instruction that emits events using the `emit_cpi!()` macro. This attribute
-[automatically includes additional accounts](https://github.com/solana-foundation/anchor/blob/62865c636aecc6974fc9cfebfc6cf08ca4f0bb72/lang/syn/src/parser/accounts/event_cpi.rs#L28-L70)
+[automatically includes additional accounts](https://github.com/solana-foundation/anchor/blob/62865c636aecc6974fc9cfebfc6cf08ca4f0bb72/lang/syn/src/parser/accounts/event_cpi.rs#L28-L69)
 that are required for the self CPI.
 
 ```rust title="lib.rs"

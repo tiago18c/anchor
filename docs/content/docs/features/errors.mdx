@@ -16,7 +16,7 @@ pub fn custom_instruction(ctx: Context<CustomInstruction>) -> Result<()> {
 ```
 
 The
-[`Result<T>`](https://github.com/solana-foundation/anchor/blob/62865c636aecc6974fc9cfebfc6cf08ca4f0bb72/lang/src/lib.rs#157)
+[`Result<T>`](https://github.com/solana-foundation/anchor/blob/62865c636aecc6974fc9cfebfc6cf08ca4f0bb72/lang/src/lib.rs#L157)
 type in Anchor programs is a type alias that wraps the standard Rust
 `Result<T, E>`. In this case, `T` represents the successful return type, while
 `E` is Anchor's custom `Error` type.
