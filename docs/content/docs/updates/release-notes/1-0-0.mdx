@@ -132,8 +132,9 @@ beginning have been removed and replaced with the new
 IDL uploads through `anchor deploy` and `anchor idl` commands work as before;
 only the underlying mechanism has changed.
 
-As a consequence, the program-id arguments of `idl init` and `idl upgrade` have
-been removed — the program ID is now derived from context.
+The `program-id` argument of `anchor idl init` and `anchor idl upgrade` is now
+optional — when omitted, the program ID is read from the `address` field of the
+IDL file itself.
 
 If you are migrating an existing deployed program with IDL, you will need to
 close existing IDL accounts before deploying the new program based on anchor 
@@ -307,6 +308,17 @@ CPI helpers. Use `my_program::parsers::Instruction::parse` with a
 `solana_instruction::Instruction` to decode any instruction belonging to the
 program.
 
+Composite (non-instruction) account structs used multiple times within a
+program previously caused duplicate definitions or incorrect instruction name
+derivation in the generated code. Both issues are now fixed: each composite
+account definition is guaranteed to be unique, and instruction names that would
+collide have a number appended until a unique name is found.
+
+Error generation has also been improved: `declare_program!` previously
+interfered with the IDL error module generation of the declaring program.
+Programs that use `declare_program!` alongside their own `#[error_code]` block
+now produce correct error code definitions.
+
 ### Use `declare_program!` with only `anchor_client`
 
 It is no longer necessary to pull in `anchor_lang` just to use
@@ -377,6 +389,34 @@ catching mismatches that were previously silent.
 ---
 
 ## IDL
+
+### Unsupported field types produce a hard error
+
+Previously, defined types containing unsupported fields (e.g. tuple types) were
+silently omitted from the generated IDL. They now produce a compile-time error:
+
+```
+error: Unsupported type
+  --> programs/name/src/lib.rs:37:8
+   |
+37 |     x: (u32, u32),
+   |        ^^^^^^^^^^
+```
+
+If you were relying on silent omission, you will need to refactor those fields
+into supported types before building.
+
+### Full path account names supported in IDL generation
+
+The IDL builder previously rejected account types that shared a short name with
+another type in a different module (e.g. `program::module::Account` conflicting
+with `other::Account`). The conflicting account names check has been removed,
+allowing full path account names to be used without errors.
+
+### `address` constraint resolves constants with numbers in their names
+
+The `address` constraint previously failed to resolve constants whose
+identifiers contained numbers (e.g. `MY_PROGRAM_V2_ID`). This is now fixed.
 
 ### `serde_json` is now optional
 
