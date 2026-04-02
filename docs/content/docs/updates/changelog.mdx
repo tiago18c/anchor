@@ -13,16 +13,6 @@ patch version will be incremented for features.
 
 ### Features
 
-- lang, cli, client: Updated solana dependencies to the latest compatible
-  versions. Bumping CI and docker builds to use Solana CLI version 3.1.10
-  ([#4317](https://github.com/solana-foundation/anchor/pull/4317/))
-- avm: Added flags and version labels to explicitly handle pre-releases
-  (`avm list --pre-release`, `avm update --pre-release` and
-  `avm install latest-pre-release`)
-  ([#4335](https://github.com/solana-foundation/anchor/pull/4335))
-- avm: Added `avm self-update` command and passive version check warning for
-  out of date avm
-  ([#4338](https://github.com/solana-foundation/anchor/pull/4338))
 - lang: Add `Migration<'info, From, To>` account type for schema migrations
   between account types
   ([#4060](https://github.com/solana-foundation/anchor/pull/4060)).
@@ -78,18 +68,19 @@ patch version will be incremented for features.
 - cli: Added `--install-agent-skills` to automatically install Solana agent
   skills during `anchor init`
   ([#4307](https://github.com/solana-foundation/anchor/pull/4307))
+- avm: Added flags and version labels to explicitly handle pre-releases
+  (`avm list --pre-release`, `avm update --pre-release` and
+  `avm install latest-pre-release`)
+  ([#4335](https://github.com/solana-foundation/anchor/pull/4335))
+- avm: Added `avm self-update` command and passive version check warning for
+  out of date avm
+  ([#4338](https://github.com/solana-foundation/anchor/pull/4338))
+- lang, cli, client: Updated solana dependencies to the latest compatible
+  versions. Bumping CI and docker builds to use Solana CLI version 3.1.10
+  ([#4317](https://github.com/solana-foundation/anchor/pull/4317/))
 
 ### Fixes
 
-- lang: Fix incorrect deserialization for dynamically sized types when using
-  `lazy-account`
-  ([#4319](https://github.com/solana-foundation/anchor/pull/4319))
-- avm: Using a temporary installation dir on cargo install calls to prevent
-  cargo erroring out due to existing `anchor` symlink in `.avm/bin`
-  ([#4343](https://github.com/solana-foundation/anchor/pull/4343))
-- avm: Fixed handling of new Cargo.toml version location. Fixed handling of
-  pre-release version parsing
-  ([#4335](https://github.com/solana-foundation/anchor/pull/4335))
 - lang: Add missing `Lazy` bound on generics
   ([#4240](https://github.com/solana-foundation/anchor/pull/4240)).
 - lang: Fix wrong generated error code in `declare_program!`
@@ -138,6 +129,17 @@ patch version will be incremented for features.
 - docs: Fixed broken links and replaced coral-xyz github references to
   solana-foundation
   ([#4320](https://github.com/solana-foundation/anchor/pull/4320))
+- avm: Fixed handling of new Cargo.toml version location. Fixed handling of
+  pre-release version parsing
+  ([#4335](https://github.com/solana-foundation/anchor/pull/4335))
+- client: Fix deadlock when having multiple websocket listeners 
+  ([#4250](https://github.com/solana-foundation/anchor/pull/4250)).
+- lang: Fix incorrect deserialization for dynamically sized types when using
+  `lazy-account`
+  ([#4319](https://github.com/solana-foundation/anchor/pull/4319))
+- avm: Using a temporary installation dir on cargo install calls to prevent
+  cargo erroring out due to existing `anchor` symlink in `.avm/bin`
+  ([#4343](https://github.com/solana-foundation/anchor/pull/4343))
 
 ### Breaking
 
@@ -181,6 +183,8 @@ patch version will be incremented for features.
   ([#3865](https://github.com/solana-foundation/anchor/pull/3865)).
 - lang: Rename `errors` and `ProgramError` of `declare_program!`
   ([#4347](https://github.com/solana-foundation/anchor/pull/4347)).
+- client: Remove the `solana-account-decoder` crate export 
+  ([#4373](https://github.com/solana-foundation/anchor/pull/4373)).
 
 ## [0.32.1] - 2025-10-09
 

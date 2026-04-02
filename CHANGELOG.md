@@ -92,7 +92,6 @@ The minor version will be incremented upon a breaking change and the patch versi
 - idl: Disallow multiple `#[error_code]` definitions in a single program ([#4300](https://github.com/solana-foundation/anchor/pull/4300)).
 - cli: Remove the `[registry]` section from `Anchor.toml` ([#4299](https://github.com/solana-foundation/anchor/pull/4299)).
 - client: Make sending a tx not panic and instead return an Error when signing fails ([#3865](https://github.com/solana-foundation/anchor/pull/3865)).
-- idl: Disallow multiple error definitions ([#4300](https://github.com/solana-foundation/anchor/pull/4300)).
 - lang: Rename `errors` and `ProgramError` of `declare_program!` ([#4347](https://github.com/solana-foundation/anchor/pull/4347)).
 - client: Remove the `solana-account-decoder` crate export ([#4373](https://github.com/solana-foundation/anchor/pull/4373)).
 
