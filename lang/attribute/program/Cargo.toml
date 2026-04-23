@@ -21,6 +21,7 @@ indexing-slicing = "deny"
 [features]
 anchor-debug = ["anchor-syn/anchor-debug"]
 idl-build = ["anchor-syn/idl-build"]
+legacy-idl = ["anchor-syn/legacy-idl"]
 
 [dependencies]
 anchor-lang-idl = { path = "../../../idl", version = "0.1.2", features = ["convert"] }

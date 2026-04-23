@@ -38,6 +38,7 @@ idl-build = [
     "anchor-lang-idl/build",
 ]
 init-if-needed = ["anchor-derive-accounts/init-if-needed"]
+legacy-idl = ["anchor-attribute-program/legacy-idl"]
 lazy-account = [
     "anchor-attribute-account/lazy-account",
     "anchor-derive-serde/lazy-account",
