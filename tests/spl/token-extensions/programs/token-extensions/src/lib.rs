@@ -57,4 +57,10 @@ pub mod token_extensions {
     ) -> Result<()> {
         instructions::check_pausable_authority_constraint_handler(ctx)
     }
+
+    pub fn update_and_remove_token_metadata(
+        ctx: Context<UpdateAndRemoveTokenMetadata>,
+    ) -> Result<()> {
+        instructions::update_and_remove_token_metadata_handler(ctx)
+    }
 }
