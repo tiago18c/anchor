@@ -80,8 +80,18 @@ pub fn generate(program: &Program) -> proc_macro2::TokenStream {
         ) -> anchor_lang::Result<()> {
             #(#global_ixs)*
 
-            // Legacy IDL instructions have been removed in favor of Program Metadata
-            // No IDL instructions are injected into programs anymore
+            // Deprecated: dispatch legacy IDL instructions when `legacy-idl` feature is enabled
+            #[cfg(feature = "legacy-idl")]
+            if data.starts_with(anchor_lang::idl::IDL_IX_TAG_LE) {
+                #[cfg(not(feature = "no-idl"))]
+                return __private::__idl::__idl_dispatch(
+                    program_id,
+                    accounts,
+                    &data[anchor_lang::idl::IDL_IX_TAG_LE.len()..],
+                );
+                #[cfg(feature = "no-idl")]
+                return Err(anchor_lang::error::ErrorCode::IdlInstructionStub.into());
+            }
 
             // Dispatch Event CPI instruction
             if data.starts_with(anchor_lang::event::EVENT_IX_TAG_LE) {

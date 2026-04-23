@@ -9,6 +9,10 @@ use {
 pub fn generate(program: &Program) -> proc_macro2::TokenStream {
     let program_name = &program.name;
 
+    // Deprecated: legacy IDL module — non-empty only when `legacy-idl` feature is enabled.
+    // Always a TokenStream so it can be interpolated into the quote! block unconditionally.
+    let legacy_idl_mod = generate_legacy_idl_mod();
+
     let event_cpi_mod = generate_event_cpi_mod();
 
     let non_inlined_handlers: Vec<proc_macro2::TokenStream> = program
@@ -148,7 +152,7 @@ pub fn generate(program: &Program) -> proc_macro2::TokenStream {
                             //     is dropped or otherwise accessed, preventing any use-after-scope.
                             //
                             // This lifetime narrowing is required to conform to the `Context`
-                            // struct’s single-lifetime parameterization, which uses a single
+                            // struct's single-lifetime parameterization, which uses a single
                             // lifetime to keep the API simple and ergonomic.
                             unsafe {
                                 __shrink_lifetime(&mut __accounts)
@@ -176,6 +180,8 @@ pub fn generate(program: &Program) -> proc_macro2::TokenStream {
         mod __private {
             use super::*;
 
+            #legacy_idl_mod
+
             /// __global mod defines wrapped handlers for global instructions.
             pub mod __global {
                 use super::*;
@@ -186,6 +192,109 @@ pub fn generate(program: &Program) -> proc_macro2::TokenStream {
             #event_cpi_mod
         }
     }
+}
+
+/// Returns the legacy IDL `__idl` module token stream when the `legacy-idl`
+/// feature is enabled, or an empty token stream otherwise.
+///
+/// Using a function (rather than `#[cfg]`-gated `let` bindings inside
+/// `generate`) ensures the variable is always in scope for `quote!`
+/// interpolation regardless of which features are active.
+fn generate_legacy_idl_mod() -> proc_macro2::TokenStream {
+    #[cfg(feature = "legacy-idl")]
+    {
+        use crate::codegen::program::idl::idl_accounts_and_functions;
+        let idl_accounts_and_functions = idl_accounts_and_functions();
+        let non_inlined_idl: proc_macro2::TokenStream = quote! {
+            // Entry for all IDL related instructions. Use the "no-idl" feature
+            // to eliminate this code, for example, if one wants to make the
+            // IDL no longer mutable or if one doesn't want to store the IDL
+            // on chain.
+            #[inline(never)]
+            #[cfg(not(feature = "no-idl"))]
+            pub fn __idl_dispatch<'info>(program_id: &Pubkey, accounts: &'info [AccountInfo<'info>], idl_ix_data: &[u8]) -> anchor_lang::Result<()> {
+                let mut accounts = accounts;
+                let mut data: &[u8] = idl_ix_data;
+
+                let ix = anchor_lang::idl::IdlInstruction::deserialize(&mut data)
+                    .map_err(|_| anchor_lang::error::ErrorCode::InstructionDidNotDeserialize)?;
+
+                match ix {
+                    anchor_lang::idl::IdlInstruction::Create { data_len } => {
+                        let mut bumps = <IdlCreateAccounts as anchor_lang::Bumps>::Bumps::default();
+                        let mut reallocs = std::collections::BTreeSet::new();
+                        let mut accounts =
+                            IdlCreateAccounts::try_accounts(program_id, &mut accounts, &[], &mut bumps, &mut reallocs)?;
+                        __idl_create_account(program_id, &mut accounts, data_len)?;
+                        accounts.exit(program_id)?;
+                    },
+                    anchor_lang::idl::IdlInstruction::Resize { data_len } => {
+                        let mut bumps = <IdlResizeAccount as anchor_lang::Bumps>::Bumps::default();
+                        let mut reallocs = std::collections::BTreeSet::new();
+                        let mut accounts =
+                            IdlResizeAccount::try_accounts(program_id, &mut accounts, &[], &mut bumps, &mut reallocs)?;
+                        __idl_resize_account(program_id, &mut accounts, data_len)?;
+                        accounts.exit(program_id)?;
+                    },
+                    anchor_lang::idl::IdlInstruction::Close => {
+                        let mut bumps = <IdlCloseAccount as anchor_lang::Bumps>::Bumps::default();
+                        let mut reallocs = std::collections::BTreeSet::new();
+                        let mut accounts =
+                            IdlCloseAccount::try_accounts(program_id, &mut accounts, &[], &mut bumps, &mut reallocs)?;
+                        __idl_close_account(program_id, &mut accounts)?;
+                        accounts.exit(program_id)?;
+                    },
+                    anchor_lang::idl::IdlInstruction::CreateBuffer => {
+                        let mut bumps = <IdlCreateBuffer as anchor_lang::Bumps>::Bumps::default();
+                        let mut reallocs = std::collections::BTreeSet::new();
+                        let mut accounts =
+                            IdlCreateBuffer::try_accounts(program_id, &mut accounts, &[], &mut bumps, &mut reallocs)?;
+                        __idl_create_buffer(program_id, &mut accounts)?;
+                        accounts.exit(program_id)?;
+                    },
+                    anchor_lang::idl::IdlInstruction::Write { data } => {
+                        let mut bumps = <IdlAccounts as anchor_lang::Bumps>::Bumps::default();
+                        let mut reallocs = std::collections::BTreeSet::new();
+                        let mut accounts =
+                            IdlAccounts::try_accounts(program_id, &mut accounts, &[], &mut bumps, &mut reallocs)?;
+                        __idl_write(program_id, &mut accounts, data)?;
+                        accounts.exit(program_id)?;
+                    },
+                    anchor_lang::idl::IdlInstruction::SetAuthority { new_authority } => {
+                        let mut bumps = <IdlAccounts as anchor_lang::Bumps>::Bumps::default();
+                        let mut reallocs = std::collections::BTreeSet::new();
+                        let mut accounts =
+                            IdlAccounts::try_accounts(program_id, &mut accounts, &[], &mut bumps, &mut reallocs)?;
+                        __idl_set_authority(program_id, &mut accounts, new_authority)?;
+                        accounts.exit(program_id)?;
+                    },
+                    anchor_lang::idl::IdlInstruction::SetBuffer => {
+                        let mut bumps = <IdlSetBuffer as anchor_lang::Bumps>::Bumps::default();
+                        let mut reallocs = std::collections::BTreeSet::new();
+                        let mut accounts =
+                            IdlSetBuffer::try_accounts(program_id, &mut accounts, &[], &mut bumps, &mut reallocs)?;
+                        __idl_set_buffer(program_id, &mut accounts)?;
+                        accounts.exit(program_id)?;
+                    },
+                }
+                Ok(())
+            }
+        };
+
+        return quote! {
+            /// Deprecated: __idl mod defines handlers for injected Anchor IDL instructions.
+            /// Only present when the `legacy-idl` feature is enabled.
+            pub mod __idl {
+                use super::*;
+
+                #non_inlined_idl
+                #idl_accounts_and_functions
+            }
+        };
+    }
+
+    #[allow(unreachable_code)]
+    proc_macro2::TokenStream::new()
 }
 
 /// Generate the event module based on whether the `event-cpi` feature is enabled.

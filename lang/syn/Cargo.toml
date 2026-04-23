@@ -26,6 +26,7 @@ event-cpi = []
 hash = []
 idl-build = ["cargo_toml"]
 init-if-needed = []
+legacy-idl = []
 
 [dependencies]
 anyhow = "1"

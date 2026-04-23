@@ -16,10 +16,13 @@ path = "src/bin/main.rs"
 dev = []
 # For development/CI testing purposes only - allows IDL commands to run against localnet
 idl-localnet-testing = []
+# Deprecated: re-enables legacy on-chain IDL instruction support. Will be removed in a future release.
+legacy-idl = ["anchor-lang/legacy-idl", "flate2"]
 
 [dependencies]
 anchor-cli-macros = { path = "cli-macros", version = "1.0.0"}
 anchor-client = { path = "../client", version = "1.0.0" }
+flate2 = { version = "1.0", optional = true }
 anchor-lang = { path = "../lang", version = "1.0.0" }
 anchor-lang-idl = { path = "../idl", version = "0.1.2", features = ["build", "convert"] }
 anyhow = "1.0.32"
