@@ -11,6 +11,12 @@ description: Anchor - Release Notes 1.0.1
 
 ## How to upgrade
 
+### Updating a single project anchor dependencies (up from v1.0.0) via
+
+```
+cargo update anchor-derive-serde
+```
+
 ### Using AVM (recommended)
 
 ```sh
@@ -48,6 +54,9 @@ Previously, the generated derive code tried to emit its own item-level
 item-level `#[borsh]` attribute is allowed, this caused a compile error. The
 macros now extract user-provided `#[borsh]` attributes and merge them with the
 generated ones, so both coexist correctly.
+
+The `#[borsh]` attribute is currently not supported when the `lazy-account` 
+feature is enabled. The only exception being `#[borsh(use_discriminant = false)]`.
 
 ```rust
 // This now compiles without errors
