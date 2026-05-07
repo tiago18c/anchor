@@ -6,7 +6,6 @@ mod cpi;
 mod dispatch;
 mod entry;
 mod handlers;
-#[cfg(feature = "legacy-idl")]
 mod idl;
 mod instruction;
 
