@@ -318,7 +318,15 @@ pub fn idl_accounts_and_functions() -> proc_macro2::TokenStream {
             let source = &accounts.buffer.trailing_data()[..buffer_len];
             require_gte!(target.len(), buffer_len);
             target[..buffer_len].copy_from_slice(source);
-            // zero the remainder of target?
+            
+            if target.len() > buffer_len {
+                let target = &mut target[buffer_len..];
+                let trailing_len = target.len();
+                // SAFETY: `trailing_len` is guaranteed by the lines above
+                unsafe {
+                    anchor_lang::solana_program::program_memory::sol_memset(target, 0, trailing_len);
+                }
+            }
 
             Ok(())
         }
