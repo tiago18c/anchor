@@ -66,7 +66,9 @@ pub use anchor_lang_idl::{build::IdlBuild, *};
 
 #[deprecated(
     note = "Usage of legacy_idl is deprecated and will be completely removed in a future version. 
-This feature has been the source of security issues in the past and is no longer supported.
-Please migrate to https://github.com/solana-foundation/program-metadata ."
+This \
+            feature has been the source of security issues in the past and is no longer supported.
+Please \
+            migrate to https://github.com/solana-foundation/program-metadata ."
 )]
 pub fn deprecated_legacy_idl_usage() {}

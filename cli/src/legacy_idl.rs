@@ -130,9 +130,8 @@ pub fn handle_legacy_idl_command(
     subcmd: LegacyIdlCommand,
 ) -> Result<()> {
     eprintln!(
-        "warning: You are using a deprecated legacy IDL command. \
-         These commands interact with the old on-chain IDL instruction protocol \
-         and will be removed in a future Anchor release. \
+        "warning: You are using a deprecated legacy IDL command. These commands interact with the \
+         old on-chain IDL instruction protocol and will be removed in a future Anchor release. \
          Please migrate to Program Metadata-based IDL management (`anchor idl`)."
     );
     match subcmd {
@@ -786,8 +785,7 @@ fn serialize_idl_ix(ix_inner: IdlInstruction) -> Result<Vec<u8>> {
 
 /// Print a `base64+borsh` encoded IDL instruction (print-only mode).
 fn print_idl_instruction(ix_name: &str, ix: &Instruction, idl_address: &Pubkey) -> Result<()> {
-    use base64::engine::general_purpose::STANDARD;
-    use base64::Engine;
+    use base64::{engine::general_purpose::STANDARD, Engine};
 
     println!("Print only mode. No execution!");
     println!("Instruction: {ix_name}");
