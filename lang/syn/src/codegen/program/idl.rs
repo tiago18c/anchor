@@ -76,7 +76,7 @@ pub fn idl_accounts_and_functions() -> proc_macro2::TokenStream {
         // Accounts for creating an idl buffer.
         #[derive(Accounts)]
         pub struct IdlCreateBuffer<'info> {
-            #[account(zero)]
+            #[account(signer, zero)]
             pub buffer: Account<'info, IdlAccount>,
             #[account(constraint = authority.key != &ERASED_AUTHORITY)]
             pub authority: Signer<'info>,

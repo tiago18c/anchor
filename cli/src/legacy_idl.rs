@@ -723,7 +723,7 @@ fn create_idl_buffer(
 
     let create_buffer_ix = {
         let accounts = vec![
-            AccountMeta::new(buffer.pubkey(), false),
+            AccountMeta::new(buffer.pubkey(), true),
             AccountMeta::new_readonly(keypair.pubkey(), true),
         ];
         let mut data = IDL_IX_TAG.to_le_bytes().to_vec();
